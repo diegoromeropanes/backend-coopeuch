@@ -33,7 +33,7 @@ class ApplicationTest {
 
     @Test
     @Order(2)
-    void create() throws Exception {
+    void createTask() throws Exception {
         mock.perform(post("/tasks/create")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\n    \"description\": \"Task 15\",\n    \"enabled\": true\n}"))
@@ -42,7 +42,7 @@ class ApplicationTest {
 
     @Test
     @Order(3)
-    void updateProduct() throws Exception {
+    void updateTask() throws Exception {
         mock.perform(put("/tasks/update")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\n    \"id\": 2,\n    \"description\": \"Task 15\",\n    \"enabled\": false\n}"))
@@ -51,7 +51,7 @@ class ApplicationTest {
 
     @Test
     @Order(4)
-    void deleteProduct() throws Exception {
+    void deleteTask() throws Exception {
         mock.perform(delete("/tasks/delete/1")).andDo(print());
     }
 }
