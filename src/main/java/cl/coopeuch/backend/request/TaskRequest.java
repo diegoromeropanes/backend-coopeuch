@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @ToString
 public class TaskRequest {
@@ -12,6 +14,7 @@ public class TaskRequest {
 	private Long id;
 
 	@JsonProperty("description")
+	@NotNull
 	private String description;
 
 	@JsonProperty("enabled")

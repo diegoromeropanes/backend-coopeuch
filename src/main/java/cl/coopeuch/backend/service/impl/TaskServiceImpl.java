@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import cl.coopeuch.backend.entity.Task;
 import cl.coopeuch.backend.mappers.TaskMapper;
+import cl.coopeuch.backend.response.ListResponse;
 import cl.coopeuch.backend.response.TaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,21 +25,28 @@ public class TaskServiceImpl implements TaskService {
 	@Autowired
 	TaskRepository repository;
 
-	public ResponseEntity<List<TaskDTO>> getTasksList(){
-		List<TaskDTO> response = new ArrayList<>();
+	public ResponseEntity<ListResponse> getTasksList(){
+		ListResponse response = new ListResponse();
 		try {
 			List<Task> taskList = repository.findAll().stream().filter(task -> task.isEnabled()).collect(Collectors.toList());
-			if(Objects.nonNull(taskList) && !taskList.isEmpty()) {
+			if(!taskList.isEmpty()) {
 				for(Task task : taskList) {
-					response.add(TaskMapper.toTaskDto(task));
+					response.getList().add(TaskMapper.toTaskDto(task));
 				}
+
+				response.setMessage(HttpStatus.OK.toString());
+				response.setStatus(HttpStatus.OK.value());
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}else{
 				log.info("Lista vacía");
+				response.setMessage(HttpStatus.NO_CONTENT.toString());
+				response.setStatus(HttpStatus.NO_CONTENT.value());
 				return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 			}
 		}catch(Exception e) {
 			log.error("Exception: {}", e.getMessage());
+			response.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -95,16 +103,11 @@ public class TaskServiceImpl implements TaskService {
 		try {
 			ResponseEntity<TaskResponse> taskResponse = findById(request.getId());
 			if(taskResponse.getStatusCode().value() == 200) {
-				TaskDTO taskDTO = taskResponse.getBody().getTask();
+				repository.updateById(request.getDescription(), request.isEnabled(), request.getId());
 
-				Task task = repository.save(new Task().setId(taskDTO.getId())
-						.setDescription(request.getDescription())
-						.setEnabled(request.isEnabled()));
-
-				response.setTask(TaskMapper.toTaskDto(task));
-				response.setMessage(HttpStatus.CREATED.toString());
-				response.setStatus(HttpStatus.CREATED.value());
-				return new ResponseEntity<>(response, HttpStatus.CREATED);
+				response.setMessage(HttpStatus.OK.toString());
+				response.setStatus(HttpStatus.OK.value());
+				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
 			return taskResponse;
 		}catch (Exception e){

@@ -3,6 +3,7 @@ package cl.coopeuch.backend.controller;
 import java.util.List;
 
 import cl.coopeuch.backend.dto.TaskDTO;
+import cl.coopeuch.backend.response.ListResponse;
 import cl.coopeuch.backend.response.TaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import cl.coopeuch.backend.request.TaskRequest;
 import cl.coopeuch.backend.service.TaskService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -20,17 +23,17 @@ public class TaskController {
 	TaskService service;
 
 	@GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<TaskDTO>> getTasksList(){
+	public ResponseEntity<ListResponse> getTasksList(){
 		return service.getTasksList();
 	}
 
 	@PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<TaskResponse> create(@RequestBody TaskRequest request){
+	public ResponseEntity<TaskResponse> create(@Valid @RequestBody TaskRequest request){
 		return service.create(request);
 	}
 
 	@PutMapping(value = "/update")
-	public ResponseEntity<TaskResponse> update(@RequestBody(required = true) TaskRequest request){
+	public ResponseEntity<TaskResponse> update(@Valid @RequestBody(required = true) TaskRequest request){
 		return service.update(request);
 	}
 
